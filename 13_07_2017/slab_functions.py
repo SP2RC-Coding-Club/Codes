@@ -6,11 +6,11 @@ from scipy.optimize import fsolve
 #Different modes can be found with different characteristic speed orderings
 # Choose wisely!
 #
-## SBB
-## Define the sound speeds and alfven speeds.
-#c2 = 1.2
-#c0 = 1.
-#vA = 0.9
+# SBB
+# Define the sound speeds and alfven speeds.
+c2 = 1.2
+c0 = 1.
+vA = 0.9
 
 #
 ## for xi of x slow surface and maybe others
@@ -19,11 +19,12 @@ from scipy.optimize import fsolve
 #vA = 0.4
 
 
-# SBS
-# Define the sound speeds and alfven speed and tube speed.
-c2 = 1.2
-c0 = 1.
-vA = 1.3
+## SBS
+## Define the sound speeds and alfven speed and tube speed.
+#c2 = 1.2
+#c0 = 1.
+#vA = 1.3
+
 cT = sc.sqrt(c0**2 * vA**2*(c0**2 + vA**2)**(-1))
 
 mode_options = ['slow-kink-surf', 'slow-saus-surf', 'slow-saus-body-3',
@@ -32,51 +33,6 @@ mode_options = ['slow-kink-surf', 'slow-saus-surf', 'slow-saus-body-3',
                 'fast-kink-body-1', 'fast-saus-body-2', 'fast-kink-body-2',
                 'fast-saus-body-3', 'fast-kink-body-3', 'fast-kink-surf',
                 'fast-saus-surf', 'shear-alfven', 'shear-alfven-broadband']
-
-alfven_mode_options = []
-kink_mode_options = []
-saus_mode_options = []
-slow_surf_mode_options = []
-fast_surf_mode_options = []
-fast_kink_mode_options = []
-fast_saus_mode_options = []
-slow_body_1_mode_options = []
-slow_body_2_mode_options = []
-slow_body_3_mode_options = []
-slow_body_mode_options = []
-fast_body_1_mode_options = []
-fast_body_2_mode_options = []
-fast_body_3_mode_options = []
-
-for mode in mode_options:
-    if 'alfven' in mode:
-        alfven_mode_options.append(mode)
-    if 'kink' in mode:
-        kink_mode_options.append(mode)
-    if 'saus' in mode:
-        saus_mode_options.append(mode)
-    if 'slow' in mode and 'surf' in mode:
-        slow_surf_mode_options.append(mode)
-    if 'fast' in mode and 'surf' in mode:
-        fast_surf_mode_options.append(mode)
-    if 'fast' in mode and 'kink' in mode:
-        fast_kink_mode_options.append(mode)
-    if 'fast' in mode and 'saus' in mode:
-        fast_saus_mode_options.append(mode)
-    if 'fast' in mode and 'body-1' in mode:
-        fast_body_1_mode_options.append(mode)
-    if 'fast' in mode and 'body-2' in mode:
-        fast_body_2_mode_options.append(mode)
-    if 'fast' in mode and 'body-3' in mode:
-        fast_body_3_mode_options.append(mode)
-    if 'slow' in mode and 'body-1' in mode:
-        slow_body_1_mode_options.append(mode)
-    if 'slow' in mode and 'body-2' in mode:
-        slow_body_2_mode_options.append(mode)
-    if 'slow' in mode and 'body-3' in mode:
-        slow_body_3_mode_options.append(mode)
-    if 'slow' in mode and 'body' in mode:
-        slow_body_mode_options.append(mode)
 
 def alfven_shear_width(mode, K):
     if mode == 'shear-alfven':
@@ -95,7 +51,7 @@ def c1(R1):
 # Equilibrium magnetic field strength within the slab:
 B0 = 1.
 
-# variables:
+# variables (reference only):
 # x = k*x
 # y = k*y
 # z = k*z
@@ -133,32 +89,32 @@ def lamb2(W):
 # Some modes have much smaller amplitude than others for the same parameters 
 # so this accounts for that.
 def required_xi(mode, K):
-    if mode in slow_surf_mode_options:
+    if 'slow' in mode and 'surf' in mode:
         return K / 3.
-    elif mode in slow_body_1_mode_options:
+    elif 'slow' in mode and 'body-1' in mode:
         return K / 130. #30.
-    elif mode in slow_body_2_mode_options:
+    elif 'slow' in mode and 'body-2' in mode:
         return K / 140. #90.
-    elif mode in slow_body_3_mode_options:
+    elif 'slow' in mode and 'body-3' in mode:
         return K / 250.
-    elif mode in fast_body_1_mode_options:
+    elif 'fast' in mode and 'body-1' in mode:
         return K / 80.
-    elif mode in fast_body_2_mode_options:
+    elif 'fast' in mode and 'body-2' in mode:
         return K / 250. #180.
-    elif mode in fast_body_3_mode_options:
+    elif 'fast' in mode and 'body-3' in mode:
         return K / 1000. #400. #250.
-    elif mode in fast_surf_mode_options:
+    elif 'fast' in mode and 'surf' in mode:
         return K / 30. #40.
     else:
         print('Not a recognised mode')
 
 def const(mode, W, K, R1):
-    return 0.6
-#    const_val_r = (W * required_xi(mode, K) / (constB_dash(mode, W, K, R1)*sc.cosh(m0(W)*K) +
-#                                     constC_dash(mode, W, K, R1)*sc.sinh(m0(W)*K)))
-#    const_val_l = (W * required_xi(mode, K) / (constB_dash(mode, W, K, R1)*sc.cosh(m0(W)*-K) +
-#                                     constC_dash(mode, W, K, R1)*sc.sinh(m0(W)*-K)))
-#    return min(const_val_r, const_val_l)
+#    return 0.6
+    const_val_r = (W * required_xi(mode, K) / (constB_dash(mode, W, K, R1)*sc.cosh(m0(W)*K) +
+                                     constC_dash(mode, W, K, R1)*sc.sinh(m0(W)*K)))
+    const_val_l = (W * required_xi(mode, K) / (constB_dash(mode, W, K, R1)*sc.cosh(m0(W)*-K) +
+                                     constC_dash(mode, W, K, R1)*sc.sinh(m0(W)*-K)))
+    return min(const_val_r, const_val_l)
 #print('WARNING: Limited const in slab_functions')
 #    if mode in slow_surf_mode_options:
 #        return 0.05
@@ -200,17 +156,17 @@ def bz_eq(mode, x, z, t, W, K, R1):
 
 # constants in the eigenfunctions
 def constB(mode, W, K, R1):
-    if mode in kink_mode_options:
+    if 'kink' in mode:
         return const(mode, W, K, R1)
-    elif mode in saus_mode_options:
+    elif 'saus' in mode:
         return const(mode, W, K, R1)*((lamb0(W)*sc.cosh(m0(W)*K)+lamb1(W, R1)*sc.sinh(m0(W)*K)) /
                                (lamb1(W, R1)*sc.cosh(m0(W)*K)+lamb0(W)*sc.sinh(m0(W)*K)))
 
 def constC(mode, W, K, R1):
-    if mode in kink_mode_options:
+    if 'kink' in mode:
         return const(mode, W, K, R1)*((lamb1(W, R1)*sc.cosh(m0(W)*K)+lamb0(W)*sc.sinh(m0(W)*K)) /
                             (lamb0(W)*sc.cosh(m0(W)*K)+lamb1(W, R1)*sc.sinh(m0(W)*K)))
-    elif mode in saus_mode_options:
+    elif 'saus' in mode:
         return const(mode, W, K, R1)
     
 def constA(mode, W, K, R1):
@@ -223,22 +179,22 @@ def constD(mode, W, K, R1):
 
 # constants without const(mode). Used for finding appropriate value for const(mode)
 def constB_dash(mode, W, K, R1):
-    if mode in kink_mode_options:
+    if 'kink' in mode:
         return 1.
-    elif mode in saus_mode_options:
+    elif 'saus' in mode:
         return ((lamb0(W)*sc.cosh(m0(W)*K)+lamb1(W, R1)*sc.sinh(m0(W)*K)) /
                                (lamb1(W, R1)*sc.cosh(m0(W)*K)+lamb0(W)*sc.sinh(m0(W)*K)))
 
 def constC_dash(mode, W, K, R1):
-    if mode in kink_mode_options:
+    if 'kink' in mode:
         return ((lamb1(W, R1)*sc.cosh(m0(W)*K)+lamb0(W)*sc.sinh(m0(W)*K)) /
                             (lamb0(W)*sc.cosh(m0(W)*K)+lamb1(W, R1)*sc.sinh(m0(W)*K)))
-    elif mode in saus_mode_options:
+    elif 'saus' in mode:
         return 1.
 
 # velocity amplitude
 def vxhat(mode, x, W, K, R1):
-    if mode in alfven_mode_options:
+    if 'alfven' in mode:
         vxhatfunction = np.zeros_like(x)
     else:
         if type(x) == float or type(x) == np.float64:
@@ -271,7 +227,7 @@ def vxhat(mode, x, W, K, R1):
     return vxhatfunction
 
 def vyhat(mode, x, K):
-    if mode in alfven_mode_options:
+    if 'alfven' in mode:
         vyhat_alfven = np.zeros_like(x)
         for i in range(len(x)):
             if x[i] > alfven_shear_width(mode, K)[0] and x[i] < alfven_shear_width(mode, K)[1]:
@@ -284,7 +240,7 @@ def vyhat(mode, x, K):
             return np.zeros_like(x, dtype=complex)
 
 def vzhat(mode, x, W, K, R1):
-    if mode in alfven_mode_options:
+    if 'alfven' in mode:
         vzhat_function = np.zeros_like(x)
     else:
         if type(x) == float or type(x) == np.float64:
@@ -406,7 +362,7 @@ def xiz(mode, x, z, t, W, K, R1):
 
 # Displacement amplitude at boundary
 def xixhat_boundary(mode, W, K, R1, boundary='r'):
-    if mode in alfven_mode_options:
+    if 'alfven' in mode:
         xixhat = 0.
     else:
         if boundary == 'r' or boundary == 'right':
@@ -422,7 +378,7 @@ def xix_boundary(mode, z, t, W, K, R1, boundary='r'):
 
 # Mag field amplitude
 def bxhat(mode, x, z, t, W, K, R1):
-    if mode in alfven_mode_options:
+    if 'alfven' in mode:
         bxhat_function = np.zeros(len(x), dtype=complex)
     else:
         truth = np.array((x <= (K + xix_boundary(mode, z, t, W, K, R1, boundary='r'))*np.ones(len(x))) &
@@ -435,14 +391,14 @@ def bxhat(mode, x, z, t, W, K, R1):
     return bxhat_function
 
 def byhat(mode, x, K):
-    if mode in alfven_mode_options:
+    if 'alfven' in mode:
         byhat_function = -(B0/vA) * vyhat(mode, x, K)
     else:
         byhat_function = np.zeros(len(x), dtype=complex)
     return byhat_function
 
 def bzhat(mode, x, z, t, W, K, R1):
-    if mode in alfven_mode_options:
+    if 'alfven' in mode:
         bzhat_function = np.zeros(len(x), dtype=complex)
     else:
         truth = np.array((x <= (K + xix_boundary(mode, z, t, W, K, R1, boundary='r'))*np.ones(len(x))) &
